@@ -11,51 +11,64 @@ namespace ConsoleApp3
         static void Main(string[] args)
         {
         }
-        static Int32 add2pyramid(Int32[] arr, Int32 i, Int32 N)
+        public static void sort(int[] arr)
         {
-            Int32 imax;
-            Int32 buf;
-            if ((2 * i + 2) < N)
+            int n = arr.Length;
+
+            // Построение кучи (перегруппируем массив)
+            for (int i = n / 2 - 1; i >= 0; i--)
+                heapify(arr, n, i);
+
+            // Один за другим извлекаем элементы из кучи
+            for (int i = n - 1; i >= 0; i--)
             {
-                if (arr[2 * i + 1] < arr[2 * i + 2]) imax = 2 * i + 2;
-                else imax = 2 * i + 1;
+                // Перемещаем текущий корень в конец
+                int temp = arr[0];
+                arr[0] = arr[i];
+                arr[i] = temp;
+
+                // вызываем процедуру heapify на уменьшенной куче
+                heapify(arr, i, 0);
             }
-            else imax = 2 * i + 1;
-            if (imax >= N) return i;
-            if (arr[i] < arr[imax])
-            {
-                buf = arr[i];
-                arr[i] = arr[imax];
-                arr[imax] = buf;
-                if (imax < N / 2) i = imax;
-            }
-            return i;
         }
 
-        public static void Pyramid_Sort(Int32[] arr, Int32 len)
-        {
-            //step 1: building the pyramid
-            for (Int32 i = len / 2 - 1; i >= 0; --i)
-            {
-                long prev_i = i;
-                i = add2pyramid(arr, i, len);
-                if (prev_i != i) ++i;
-            }
+        // Процедура для преобразования в двоичную кучу поддерева с корневым узлом i, что является
+        // индексом в arr[]. n - размер кучи
 
-            //step 2: sorting
-            Int32 buf;
-            for (Int32 k = len - 1; k > 0; --k)
+        static void heapify(int[] arr, int n, int i)
+        {
+            int largest = i;
+            // Инициализируем наибольший элемент как корень
+            int l = 2 * i + 1; // left = 2*i + 1
+            int r = 2 * i + 2; // right = 2*i + 2
+
+            // Если левый дочерний элемент больше корня
+            if (l < n && arr[l] > arr[largest])
+                largest = l;
+
+            // Если правый дочерний элемент больше, чем самый большой элемент на данный момент
+            if (r < n && arr[r] > arr[largest])
+                largest = r;
+
+            // Если самый большой элемент не корень
+            if (largest != i)
             {
-                buf = arr[0];
-                arr[0] = arr[k];
-                arr[k] = buf;
-                Int32 i = 0, prev_i = -1;
-                while (i != prev_i)
-                {
-                    prev_i = i;
-                    i = add2pyramid(arr, i, k);
-                }
+                int swap = arr[i];
+                arr[i] = arr[largest];
+                arr[largest] = swap;
+
+                // Рекурсивно преобразуем в двоичную кучу затронутое поддерево
+                heapify(arr, n, largest);
             }
+        }
+
+        /* Вспомогательная функция для вывода на экран массива размера n */
+        static void printArray(int[] arr)
+        {
+            int n = arr.Length;
+            for (int i = 0; i < n; ++i)
+                Console.Write(arr[i] + " ");
+            Console.Read();
         }
     }
 }
